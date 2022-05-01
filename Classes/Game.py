@@ -3,19 +3,18 @@ from Classes.Wireframe import Wireframe
 
 class Game(object):
     def __init__(self):
-        self.wireframe = Wireframe()
         self.clock = pygame.time.Clock()
         self.game_width = 800
         self.game_height = 600
+        self.wireframe = Wireframe(self.game_width,self.game_height)
         self.win = pygame.display.set_mode((self.game_width,self.game_height))
         pygame.init()
 
 
     def draw(self):
         self.win.fill((230,255,255))
-        self.wireframe.draw_arrow(self.win, 50, 50, 100, 45, (0, 0, 0))
-        self.wireframe.draw_arrow(self.win, 500, 500, 200, -80, (0, 0, 255))
-        self.wireframe.draw_arrow(self.win, 50, 300, 150, 0, (0, 255, 0))
+        self.wireframe.draw_axes(self.win)
+
         pygame.display.update()
 
 
