@@ -1,6 +1,6 @@
 import pygame
 from Classes.Wireframe import Wireframe
-from math import cos, sin
+from math import cos, sin, sqrt, atan2
 from src.helper import deg_to_rad, rad_to_deg
 
 class Robot(object):
@@ -14,9 +14,9 @@ class Robot(object):
         self.angle_step = 2
         self.v_y = 0
         self.v_x = 0
-        self.friction = .1
-        self.acceleration = .2
-        self.max_speed = .5
+        self.friction = .01
+        self.acceleration = .1
+        self.max_speed = 5
         pygame.init()
 
     def draw(self, win):
@@ -31,19 +31,18 @@ class Robot(object):
         if instruction == "forward":
             self.v_x += self.acceleration * cos(deg_to_rad(self.angle))
             self.v_y += self.acceleration * sin(deg_to_rad(self.angle))
-            if self.v_x >= self.max_speed:
-                self.v_x = self.max_speed
-            if self.v_y >= self.max_speed:
-                self.v_y = self.max_speed
+            if sqrt( self.v_x**2 + self.v_y**2 ) >= self.max_speed:
+                self.v_x -= self.acceleration * cos(deg_to_rad(self.angle))
+                self.v_y -= self.acceleration * sin(deg_to_rad(self.angle))
 
     def drift(self):
         self.x += self.v_x
         self.y += self.v_y
-#        if self.v_x < self.friction:
-#            self.v_x = 0
-#        else:
-#            self.v_x -= self.friction
-#        if self.v_y < .1:
-#            self.v_y = 0
-#        else:
-#            self.v_y -= self.friction
+        v_x = self.v_x
+        v_y = self.v_y
+        if sqrt( v_x**2 + v_y**2) > self.friction:
+            self.v_x -= self.friction * cos(atan2(v_y, v_x))
+            self.v_y -= self.friction * sin(atan2(v_y, v_x))
+        else:
+            self.v_x = 0
+            self.v_y = 0
