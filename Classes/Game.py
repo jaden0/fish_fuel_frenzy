@@ -6,8 +6,8 @@ from Classes.Robot import Robot
 class Game(object):
     def __init__(self):
         self.clock = pygame.time.Clock()
-        self.game_width = 800
-        self.game_height = 600
+        self.game_width = 1000
+        self.game_height = 1000
         self.wireframe = Wireframe(self.game_width, self.game_height)
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
         self.Robot = Robot(self.game_height, self.game_width)
@@ -33,6 +33,10 @@ class Game(object):
             self.Robot.move("right")
         if keys[pygame.K_LEFT]:
             self.Robot.move("left")
+        if keys[pygame.K_UP]:
+            self.Robot.move("forward")
+
+        self.Robot.drift()
         self.draw()
 
         return True
