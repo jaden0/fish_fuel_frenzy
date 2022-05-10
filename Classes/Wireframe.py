@@ -1,5 +1,5 @@
 import pygame
-from math import cos, sin
+from math import cos, sin, atan2, sqrt
 from src.helper import deg_to_rad, rad_to_deg
 
 
@@ -7,6 +7,7 @@ class Wireframe(object):
     def __init__(self, game_width, game_height):
         self.game_width = game_width
         self.game_height = game_height
+        self.vector_font = pygame.font.SysFont("comicsa nsms", 20)
 
     def draw_arrow(self, win, x, y, length, theta, color):
         delta_theta = 4
@@ -32,3 +33,25 @@ class Wireframe(object):
         win.blit(text, (25 + arrow_length + 15 - text.get_width() / 2, 25 - text.get_height() / 2))
         text = font.render("Y", False, (0, 0, 0))
         win.blit(text, (25 - text.get_width() / 2, 25 + arrow_length + 15 - text.get_height() / 2))
+
+
+    def draw_robot(self, win, robot):
+        pygame.draw.circle(win, robot.color, (robot.x, robot.y), robot.radius, 1)
+        self.draw_arrow(win, robot.x, robot.y, 100, robot.angle, robot.color)
+        drift_angle = atan2( robot.v_y, robot.v_x)
+        drift_vel = sqrt( robot.v_y**2 +robot.v_x**2 )
+        self.draw_vectors(win, robot.x, robot.y, rad_to_deg(drift_angle), drift_vel*40, (255,0,0), "Vel")
+        self.draw_vectors(win, robot.x, robot.y, rad_to_deg(drift_angle) + 180,  40*(drift_vel>0), (0,255,0), "f"  )
+
+
+    def draw_vectors(self, win, x, y, angle, length, color, input_text):
+        self.draw_arrow(win, x, y, length, angle, color)
+        x_text = x + (length + 20)  * cos(deg_to_rad(angle))
+        y_text = y + (length + 20)  * sin(deg_to_rad(angle))
+        text = self.vector_font.render(input_text, False, color)
+        win.blit(text, (x_text - text.get_width() / 2, y_text - text.get_height() / 2))
+        pygame.draw.circle(win, color, (x, y), length, 2)
+        x_arrow_tip = x + length  * cos(deg_to_rad(angle))
+        y_arrow_tip = y + length  * sin(deg_to_rad(angle))
+        pygame.draw.line(win, color, (x_arrow_tip, y), (x, y), 1)
+        pygame.draw.line(win, color, (x_arrow_tip, y), (x_arrow_tip, y_arrow_tip), 1)

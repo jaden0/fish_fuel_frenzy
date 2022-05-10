@@ -7,21 +7,21 @@ class Robot(object):
     def __init__(self, game_height, game_width):
         self.x = int(game_width / 2)
         self.y = int(game_height / 2)
-        self.radius = 35
+        self.radius = 10
         self.color = (128, 128, 128)
         self.angle = 46
-        self.arrow_maker = Wireframe(game_width, game_height)
+        self.wireframe = Wireframe(game_width, game_height)
         self.angle_step = 2
         self.v_y = 0
         self.v_x = 0
         self.friction = .01
         self.acceleration = .1
         self.max_speed = 5
-        pygame.init()
+
 
     def draw(self, win):
-        pygame.draw.circle(win, self.color, (self.x, self.y), self.radius, 0)
-        self.arrow_maker.draw_arrow(win, self.x, self.y, 100, self.angle, self.color)
+        self.wireframe.draw_robot(win, self)
+
 
     def move(self, instruction):
         if instruction == "right":

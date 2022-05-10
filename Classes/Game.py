@@ -8,10 +8,11 @@ class Game(object):
         self.clock = pygame.time.Clock()
         self.game_width = 800
         self.game_height = 600
+        pygame.init()
         self.wireframe = Wireframe(self.game_width, self.game_height)
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
         self.Robot = Robot(self.game_height, self.game_width)
-        pygame.init()
+
 
     def draw(self):
         self.win.fill((230, 255, 255))
