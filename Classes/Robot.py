@@ -3,6 +3,7 @@ from Classes.Wireframe import Wireframe
 from math import cos, sin, sqrt, atan2
 from src.helper import deg_to_rad, rad_to_deg
 
+
 class Robot(object):
     def __init__(self, game_height, game_width):
         self.x = int(game_width / 2)
@@ -18,10 +19,8 @@ class Robot(object):
         self.acceleration = .1
         self.max_speed = 5
 
-
-    def draw(self, win):
-        self.wireframe.draw_robot(win, self)
-
+    def draw(self, win, wireframe_active):
+        pygame.draw.circle(win,(0,0,0),(40,40),40)
 
     def move(self, instruction):
         if instruction == "right":
@@ -31,7 +30,7 @@ class Robot(object):
         if instruction == "forward":
             self.v_x += self.acceleration * cos(deg_to_rad(self.angle))
             self.v_y += self.acceleration * sin(deg_to_rad(self.angle))
-            if sqrt( self.v_x**2 + self.v_y**2 ) >= self.max_speed:
+            if sqrt(self.v_x ** 2 + self.v_y ** 2) >= self.max_speed:
                 self.v_x -= self.acceleration * cos(deg_to_rad(self.angle))
                 self.v_y -= self.acceleration * sin(deg_to_rad(self.angle))
 
@@ -40,7 +39,7 @@ class Robot(object):
         self.y += self.v_y
         v_x = self.v_x
         v_y = self.v_y
-        if sqrt( v_x**2 + v_y**2) > self.friction:
+        if sqrt(v_x ** 2 + v_y ** 2) > self.friction:
             self.v_x -= self.friction * cos(atan2(v_y, v_x))
             self.v_y -= self.friction * sin(atan2(v_y, v_x))
         else:
