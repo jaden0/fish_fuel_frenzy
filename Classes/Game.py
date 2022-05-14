@@ -11,9 +11,9 @@ class Game(object):
         self.wireframe_active = True
         self.change_ready = False
         pygame.init()
-        self.wireframe = Wireframe(self.game_width, self.game_height)
+        self.wireframe = Wireframe()
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
-        self.Robot = Robot(self.game_height, self.game_width)
+        self.Robot = Robot(int(self.game_height / 2), int(self.game_width / 2),10)
 
     def draw(self):
         self.win.fill((230, 255, 255))
@@ -21,10 +21,10 @@ class Game(object):
 
             self.wireframe.draw_robot(self.win,self.Robot)
 
-            self.wireframe.draw_axes(self.win)
+            self.wireframe.draw_axes(self.win, self.game_width / 4)
         else:
             # draw using objects
-            self.Robot.draw(self.win, self.wireframe_active)
+            self.Robot.draw(self.win)
         pygame.display.update()
 
     def tick(self):
@@ -45,9 +45,7 @@ class Game(object):
         if keys[pygame.K_UP]:
             self.Robot.move("forward")
         if keys[pygame.K_i]:
-            print( "i")
             if self.change_ready:
-                print( "changing")
                 self.wireframe_active = not self.wireframe_active
                 self.change_ready = False
         else:
