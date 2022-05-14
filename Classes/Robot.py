@@ -10,7 +10,12 @@ class Robot(object):
         self.y = y
         self.radius = radius
         self.color = (128, 128, 128)
-        self.angle = 46
+        self.angle = -46
+        self.tread_1_state = 0
+        self.tread_2_state = 0
+        self.tread_count_max = 3
+        self.tread_1_counter = int(self.tread_count_max / 2)
+        self.tread_2_counter = int(self.tread_count_max / 2)
         self.wireframe = Wireframe()
         self.angle_step = 2
         self.v_y = 0
@@ -24,34 +29,81 @@ class Robot(object):
             for j in range(0,3):
                 image_filename = "Images/robot_%d_%d.png" % (i,j)
                 image = pygame.image.load(image_filename)
-
+                image = pygame.transform.scale(image, (self.radius * 2, self.radius * 2))
+                image = pygame.transform.rotate(image, -90)
                 temp.append(image)
 
             self.images.append(temp)
         print( "robot constructed")
-        self.image = None
+        self.image = self.images[0][0]
         self.update_image()
 
     def update_image(self):
-        self.image = self.images[0][0]
+        self.image = self.images[self.tread_2_state][self.tread_1_state]
+        self.image = pygame.transform.rotate(self.image, -self.angle)
+
 
 
     def draw(self, win: pygame.Surface):
-        pygame.draw.circle(win,(0,0,0),(self.x,self.y),40)
         win.blit(self.image, (self.x - self.image.get_width() / 2, self.y - self.image.get_height() / 2))
     def move(self, instruction):
-        if instruction == "right":
+        changed_state = False
+        if instruction == "right": # inside each of these, you need to increase the counter
             self.angle += self.angle_step
+            self.tread_1_counter -= 1
+            self.tread_2_counter += 1
+            changed_state = True
         if instruction == "left":
             self.angle -= self.angle_step
+            self.tread_1_counter += 1
+            self.tread_2_counter -= 1
+            changed_state = True
         if instruction == "forward":
             self.v_x += self.acceleration * cos(deg_to_rad(self.angle))
             self.v_y += self.acceleration * sin(deg_to_rad(self.angle))
             if sqrt(self.v_x ** 2 + self.v_y ** 2) >= self.max_speed:
                 self.v_x -= self.acceleration * cos(deg_to_rad(self.angle))
                 self.v_y -= self.acceleration * sin(deg_to_rad(self.angle))
+            self.tread_1_counter += 1
+            self.tread_2_counter += 1
+            changed_state = True
+        if self.tread_1_counter < 0:
+            self.tread_1_state -= 1
+            changed_state = True
+            self.tread_1_counter = self.tread_count_max
+        if self.tread_1_counter > self.tread_count_max:
+            self.tread_1_state += 1
+            changed_state = True
+            self.tread_1_counter = 0
+        if self.tread_2_counter < 0:
+            self.tread_2_state -= 1
+            changed_state = True
+            self.tread_2_counter = self.tread_count_max
+        if self.tread_2_counter > self.tread_count_max:
+            self.tread_2_state += 1
+            changed_state = True
+            self.tread_2_counter = 0
+        if self.tread_2_state > 2:
+            self.tread_2_state = 0
+        if self.tread_1_state > 2:
+            self.tread_1_state = 0
+        if self.tread_2_state < 0:
+            self.tread_2_state = 2
+        if self.tread_1_state < 0:
+            self.tread_1_state = 2
+        # if counter is less than 0, or more than max time steps, then change state, and counter
+        if changed_state:
+            self.update_image()
 
-    def drift(self):
+    def drift(self, game_width, game_height):
+        if self.x + self.v_x - self.radius < 0:
+            self.v_x -= 2 * self.v_x
+        if self.y + self.v_y - self.radius < 0:
+            self.v_y -= 2 * self.v_y
+        if self.x + self.v_x + self.radius > game_width:
+            self.v_x -= 2 * self.v_x
+        if self.y + self.v_y + self.radius > game_height:
+            self.v_y -= 2 * self.v_y
         self.x += self.v_x
         self.y += self.v_y
         v_x = self.v_x

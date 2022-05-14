@@ -33,7 +33,7 @@ class Wireframe(object):
 
 
     def draw_robot(self, win, robot):
-        pygame.draw.circle(win, robot.color, (robot.x, robot.y), robot.radius, 1)
+        pygame.draw.circle(win, robot.color, (robot.x, robot.y), robot.radius / 4, 1)
         self.draw_arrow(win, robot.x, robot.y, 100, robot.angle, robot.color)
         drift_angle = atan2( robot.v_y, robot.v_x)
         drift_vel = sqrt( robot.v_y**2 +robot.v_x**2 )

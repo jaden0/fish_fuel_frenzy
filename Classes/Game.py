@@ -13,7 +13,7 @@ class Game(object):
         pygame.init()
         self.wireframe = Wireframe()
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
-        self.Robot = Robot(int(self.game_height / 2), int(self.game_width / 2),10)
+        self.Robot = Robot(int(self.game_height / 2), int(self.game_width / 2),60)
 
     def draw(self):
         self.win.fill((230, 255, 255))
@@ -50,7 +50,7 @@ class Game(object):
                 self.change_ready = False
         else:
             self.change_ready = True
-        self.Robot.drift()
+        self.Robot.drift(self.game_width, self.game_height)
         self.draw()
 
 
