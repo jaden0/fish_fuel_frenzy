@@ -20,9 +20,9 @@ class Robot(object):
         self.angle_step = 2
         self.v_y = 0
         self.v_x = 0
-        self.friction = .01
-        self.acceleration = .1
-        self.max_speed = 5
+        self.friction = .05
+        self.acceleration = .2
+        self.max_speed = 10
         self.images = []
         for i in range(0,3):
             temp = []

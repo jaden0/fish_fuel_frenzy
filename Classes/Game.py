@@ -1,29 +1,34 @@
 import pygame
 from Classes.Wireframe import Wireframe
 from Classes.Robot import Robot
-
+from Classes.Fish import Fish
 
 class Game(object):
     def __init__(self):
         self.clock = pygame.time.Clock()
-        self.game_width = 800
-        self.game_height = 600
+        self.game_width = 1600
+        self.game_height = 1200
         self.wireframe_active = True
         self.change_ready = False
         pygame.init()
         self.wireframe = Wireframe()
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
         self.Robot = Robot(int(self.game_height / 2), int(self.game_width / 2),60)
+        self.Fishes = [Fish(800, 400), Fish(500, 1000)]
 
     def draw(self):
         self.win.fill((230, 255, 255))
         if self.wireframe_active:
+            for fish in self.Fishes:
+                self.wireframe.draw_fish(self.win, fish)
 
             self.wireframe.draw_robot(self.win,self.Robot)
 
             self.wireframe.draw_axes(self.win, self.game_width / 4)
         else:
             # draw using objects
+            for fish in self.Fishes:
+                fish.draw(self.win)
             self.Robot.draw(self.win)
         pygame.display.update()
 
