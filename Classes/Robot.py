@@ -5,7 +5,7 @@ from src.helper import deg_to_rad, rad_to_deg
 
 
 class Robot(object):
-    def __init__(self, x,y, radius):
+    def __init__(self, x, y, radius):
         self.x = x
         self.y = y
         self.radius = radius
@@ -22,19 +22,20 @@ class Robot(object):
         self.v_x = 0
         self.friction = .05
         self.acceleration = .2
+        self.back_acceleration = self.acceleration / 2
         self.max_speed = 10
         self.images = []
-        for i in range(0,3):
+        for i in range(0, 3):
             temp = []
-            for j in range(0,3):
-                image_filename = "Images/robot_%d_%d.png" % (i,j)
+            for j in range(0, 3):
+                image_filename = "Images/robot_%d_%d.png" % (i, j)
                 image = pygame.image.load(image_filename)
                 image = pygame.transform.scale(image, (self.radius * 2, self.radius * 2))
                 image = pygame.transform.rotate(image, -90)
                 temp.append(image)
 
             self.images.append(temp)
-        print( "robot constructed")
+        print("robot constructed")
         self.image = self.images[0][0]
         self.update_image()
 
@@ -42,13 +43,12 @@ class Robot(object):
         self.image = self.images[self.tread_2_state][self.tread_1_state]
         self.image = pygame.transform.rotate(self.image, -self.angle)
 
-
-
     def draw(self, win: pygame.Surface):
         win.blit(self.image, (self.x - self.image.get_width() / 2, self.y - self.image.get_height() / 2))
+
     def move(self, instruction):
         changed_state = False
-        if instruction == "right": # inside each of these, you need to increase the counter
+        if instruction == "right":  # inside each of these, you need to increase the counter
             self.angle += self.angle_step
             self.tread_1_counter -= 1
             self.tread_2_counter += 1
@@ -66,6 +66,15 @@ class Robot(object):
                 self.v_y -= self.acceleration * sin(deg_to_rad(self.angle))
             self.tread_1_counter += 1
             self.tread_2_counter += 1
+            changed_state = True
+        if instruction == "backwards":
+            self.v_x -= self.back_acceleration * cos(deg_to_rad(self.angle))
+            self.v_y -= self.back_acceleration * sin(deg_to_rad(self.angle))
+            if sqrt(self.v_x ** 2 + self.v_y ** 2) >= self.max_speed:
+                self.v_x += self.back_acceleration * cos(deg_to_rad(self.angle))
+                self.v_y += self.back_acceleration * sin(deg_to_rad(self.angle))
+            self.tread_1_counter -= .75
+            self.tread_2_counter -= .75
             changed_state = True
         if self.tread_1_counter < 0:
             self.tread_1_state -= 1
