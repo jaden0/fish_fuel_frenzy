@@ -6,9 +6,12 @@ from src.helper import deg_to_rad, rad_to_deg
 
 class Robot(object):
     def __init__(self, x, y, radius):
+        self.score = 0
         self.x = x
         self.y = y
         self.radius = radius
+        self.fishtube_radius = radius * .5
+        self.fishtube_length = radius * 1.
         self.color = (128, 128, 128)
         self.angle = -46
         self.tread_1_state = 0
@@ -123,3 +126,18 @@ class Robot(object):
         else:
             self.v_x = 0
             self.v_y = 0
+    def suck_fish(self, fishes):
+        for fish in fishes:
+            sucked = False
+            fishtube_x = self.x + self.fishtube_length * cos(deg_to_rad(self.angle))
+            fishtube_y = self.y + self.fishtube_length * sin(deg_to_rad(self.angle))
+            if (fish.x - self.x) ** 2 + (fish.y - self.y) ** 2 < self.radius ** 2:
+                sucked = True
+            if (fish.x - fishtube_x) ** 2 + (fish.y - fishtube_y) ** 2 < self.fishtube_radius ** 2:
+                sucked = True
+            if sucked:
+                fishes.pop(fishes.index(fish))
+                self.score += 1
+                print("sucked fish, total: %d" % self.score)
+
+        return fishes
