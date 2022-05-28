@@ -126,7 +126,7 @@ class Robot(object):
         else:
             self.v_x = 0
             self.v_y = 0
-    def suck_fish(self, fishes):
+    def suck_fish(self, fishes, fishholes):
         for fish in fishes:
             sucked = False
             fishtube_x = self.x + self.fishtube_length * cos(deg_to_rad(self.angle))
@@ -139,5 +139,6 @@ class Robot(object):
                 fishes.pop(fishes.index(fish))
                 self.score += 1
                 print("sucked fish, total: %d" % self.score)
+            # TODO: Tell fishhole, that it doesn't have a fish anymore
 
         return fishes

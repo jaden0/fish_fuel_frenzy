@@ -17,6 +17,7 @@ class Game(object):
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
         self.robot = Robot(int(self.game_width / 2), int(self.game_height / 2), 60)
         self.fishes = [Fish(800, 400), Fish(500, 400), Fish(500, 300), Fish(850, 450), Fish(550, 450), Fish(550, 350)]
+        self.fishholes = []
 
     def draw(self):
         self.win.fill((230, 255, 255))
@@ -34,6 +35,19 @@ class Game(object):
             self.wireframe.draw_axes(self.win, self.game_width / 4)
 
         pygame.display.update()
+
+
+    def check_fish(self):
+        for fishhole in self.Fishholes:
+            if fishhole.has_fish:
+                continue
+
+            # is robot near hole
+                # set fishhole time left, and wait until robot not near hole, then "reset"
+            # if reset
+                # reset next_fish_time to now plus time left
+
+            # make new fish
 
     def tick(self):
         self.clock.tick(60)
@@ -66,7 +80,7 @@ class Game(object):
 
 
         self.robot.drift(self.game_width, self.game_height)
-        self.fishes = self.robot.suck_fish(self.fishes)
+        self.fishes = self.robot.suck_fish(self.fishes, self.fishholes)
         self.draw()
 
         return True
