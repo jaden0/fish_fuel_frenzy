@@ -110,13 +110,13 @@ class Robot(object):
 
     def drift(self, game_width, game_height):
         if self.x + self.v_x - self.radius < 0:
-            self.v_x -= 2 * self.v_x
+            self.v_x -= 1.5 * self.v_x
         if self.y + self.v_y - self.radius < 0:
-            self.v_y -= 2 * self.v_y
+            self.v_y -= 1.5 * self.v_y
         if self.x + self.v_x + self.radius > game_width:
-            self.v_x -= 2 * self.v_x
+            self.v_x -= 1.5 * self.v_x
         if self.y + self.v_y + self.radius > game_height:
-            self.v_y -= 2 * self.v_y
+            self.v_y -= 1.5 * self.v_y
         self.x += self.v_x
         self.y += self.v_y
         v_x = self.v_x

@@ -9,9 +9,9 @@ class Fishhole(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.mu = 5
-        self.sigma = 5
-        self.fish_distance = 10
+        self.mu = 15
+        self.sigma = 10
+        self.fish_distance = 30
         self.has_fish = False
         self.next_fish_time = time() + random.gauss(self.mu, self.sigma)
         self.time_left = None
