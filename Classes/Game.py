@@ -1,35 +1,36 @@
 import pygame
 from Classes.Wireframe import Wireframe
 from Classes.Robot import Robot
-from Classes.Fish import Fish
-
+from Classes.Fishhole import Fishhole
+from time import  time
 
 class Game(object):
     def __init__(self):
         self.clock = pygame.time.Clock()
         self.game_width = 1300
         self.game_height = 700
+        self.min_robot_distance = 150
         self.wireframe_active = True
-        self.render_active = True
+        self.render_active = False
         self.change_ready = False
         pygame.init()
         self.wireframe = Wireframe()
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
         self.robot = Robot(int(self.game_width / 2), int(self.game_height / 2), 60)
-        self.fishes = [Fish(800, 400), Fish(500, 400), Fish(500, 300), Fish(850, 450), Fish(550, 450), Fish(550, 350)]
-        self.fishholes = []
+        self.fishholes = [Fishhole(100, 100), Fishhole(500, 400), Fishhole(500, 300), Fishhole(850, 450), Fishhole(550, 450), Fishhole(550, 350)]
+
 
     def draw(self):
         self.win.fill((230, 255, 255))
         if self.render_active:
             # draw using objects
-            for fish in self.fishes:
-                fish.draw(self.win)
+            for fishhole in self.fishholes:
+                if fishhole.has_fish:
+                    fishhole.fish.draw(self.win)
             self.robot.draw(self.win)
         if self.wireframe_active:
-            for fish in self.fishes:
-                self.wireframe.draw_fish(self.win, fish)
-
+            for fishhole in self.fishholes:
+                self.wireframe.draw_fishhole(self.win, fishhole)
             self.wireframe.draw_robot(self.win, self.robot)
 
             self.wireframe.draw_axes(self.win, self.game_width / 4)
@@ -38,16 +39,28 @@ class Game(object):
 
 
     def check_fish(self):
-        for fishhole in self.Fishholes:
+        for fishhole in self.fishholes:
             if fishhole.has_fish:
                 continue
 
+
             # is robot near hole
-                # set fishhole time left, and wait until robot not near hole, then "reset"
-            # if reset
-                # reset next_fish_time to now plus time left
+            if (self.robot.x - fishhole.x) ** 2 + (self.robot.y - fishhole.y) ** 2 < self.min_robot_distance ** 2:
+
+                if fishhole.stop_timer == False:
+                    fishhole.time_left = fishhole.next_fish_time - time()
+                    print("too close")
+                    print( "stopping timer, with %.0f seconds" % fishhole.time_left)
+                    fishhole.stop_timer = True
+            elif fishhole.stop_timer:
+                    fishhole.stop_timer = False
+                    fishhole.next_fish_time = time() + fishhole.time_left
+                    print( "starting timer with %.0f seconds left" % fishhole.time_left)
+
 
             # make new fish
+            if time() > fishhole.next_fish_time and not fishhole.stop_timer:
+                fishhole.make_fish()
 
     def tick(self):
         self.clock.tick(60)
@@ -68,19 +81,18 @@ class Game(object):
             self.robot.move("forward")
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.robot.move("backwards")
-        if keys[pygame.K_i] or keys[pygame.K_o]:
+        if keys[pygame.K_i]:
             if self.change_ready:
-                if keys[pygame.K_i]:
-                    self.wireframe_active = not self.wireframe_active
-                if keys[pygame.K_o]:
-                    self.render_active = not self.render_active
+                self.wireframe_active = not self.wireframe_active
+                self.render_active = not self.render_active
                 self.change_ready = False
         else:
             self.change_ready = True
 
 
         self.robot.drift(self.game_width, self.game_height)
-        self.fishes = self.robot.suck_fish(self.fishes, self.fishholes)
+        self.fisholes = self.robot.suck_fish(self.fishholes)
+        self.check_fish()
         self.draw()
 
         return True

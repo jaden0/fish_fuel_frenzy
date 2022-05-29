@@ -2,6 +2,7 @@ import pygame
 from Classes.Wireframe import Wireframe
 from math import cos, sin, sqrt, atan2
 from src.helper import deg_to_rad, rad_to_deg
+from time import time
 
 
 class Robot(object):
@@ -126,8 +127,12 @@ class Robot(object):
         else:
             self.v_x = 0
             self.v_y = 0
-    def suck_fish(self, fishes, fishholes):
-        for fish in fishes:
+    def suck_fish(self, fishholes):
+        for fishhole in fishholes:
+            if fishhole.has_fish:
+                fish = fishhole.fish
+            else:
+                continue
             sucked = False
             fishtube_x = self.x + self.fishtube_length * cos(deg_to_rad(self.angle))
             fishtube_y = self.y + self.fishtube_length * sin(deg_to_rad(self.angle))
@@ -136,9 +141,7 @@ class Robot(object):
             if (fish.x - fishtube_x) ** 2 + (fish.y - fishtube_y) ** 2 < self.fishtube_radius ** 2:
                 sucked = True
             if sucked:
-                fishes.pop(fishes.index(fish))
+                fishhole.lose_fish()
                 self.score += 1
                 print("sucked fish, total: %d" % self.score)
-            # TODO: Tell fishhole, that it doesn't have a fish anymore
-
-        return fishes
+                print( "next fish time: %d seconds" % int( fishhole.next_fish_time - time()))

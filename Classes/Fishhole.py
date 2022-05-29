@@ -6,16 +6,18 @@ from math import cos, sin
 from time import time
 
 class Fishhole(object):
-    def __init__(self, x, y, ID):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.mu = 20
+        self.mu = 5
         self.sigma = 5
         self.fish_distance = 10
         self.has_fish = False
-        self.next_fish_time = None
+        self.next_fish_time = time() + random.gauss(self.mu, self.sigma)
         self.time_left = None
-        self.ID = ID
+        self.fish = None
+        self.stop_timer = False
+
 
 
     def make_fish(self):
@@ -23,7 +25,11 @@ class Fishhole(object):
         fish_x = self.x + self.fish_distance * cos(deg_to_rad(angle))
         fish_y = self.y + self.fish_distance * sin(deg_to_rad(angle))
         fish = Fish(fish_x, fish_y)
-        fish.hole_ID = self.ID
-        self.next_fish_time = time() + random.gauss(self.mu, self.sigma)
         self.has_fish = True
-        return(fish)
+        self.fish = fish
+        print( "new fish")
+
+    def lose_fish(self):
+        self.has_fish = False
+        self.fish = None
+        self.next_fish_time = time() + random.gauss(self.mu, self.sigma)

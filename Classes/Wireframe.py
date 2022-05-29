@@ -56,7 +56,10 @@ class Wireframe(object):
         pygame.draw.line(win, color, (x_arrow_tip, y), (x, y), 1)
         pygame.draw.line(win, color, (x_arrow_tip, y), (x_arrow_tip, y_arrow_tip), 1)
 
-    def draw_fish(self, win, fish):
-        pygame.draw.circle(win, (0, 0, 255), (fish.x, fish.y), 10)
-        text = self.vector_font.render("Fisch", False, (0, 0, 255))
-        win.blit(text, (fish.x - text.get_width() / 2, fish.y + 15))
+    def draw_fishhole(self, win, fishhole):
+        pygame.draw.circle(win, (0, 0, 0), (fishhole.x, fishhole.y), 15)
+        if fishhole.has_fish:
+            fish = fishhole.fish
+            pygame.draw.circle(win, (0, 0, 255), (fish.x, fish.y), 10)
+            text = self.vector_font.render("Fisch", False, (0, 0, 255))
+            win.blit(text, (fish.x - text.get_width() / 2, fish.y + 15))
