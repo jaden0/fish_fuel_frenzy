@@ -29,12 +29,16 @@ class Game(object):
             for fishhole in self.fishholes:
                 if fishhole.has_fish:
                     fishhole.fish.draw(self.win)
-        self.robot.draw(self.win)
         if self.wireframe_active:
-            for fishhole in self.fishholes:
-                self.wireframe.draw_robot(self.win, self.robot)
-                self.wireframe.draw_fishhole(self.win, fishhole)
             self.wireframe.draw_axes(self.win, self.game_width / 4)
+            self.wireframe.draw_info(50, 50, self)
+
+            for fishhole in self.fishholes:
+                self.wireframe.draw_fishhole(self.win, fishhole)
+            self.robot.draw(self.win)
+            self.wireframe.draw_robot(self.win, self.robot)
+
+
 
         pygame.display.update()
 

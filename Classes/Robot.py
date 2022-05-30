@@ -127,7 +127,10 @@ class Robot(object):
         else:
             self.v_x = 0
             self.v_y = 0
-
+        if self.angle < 0:
+            self.angle += 360
+        if self.angle > 360:
+            self.angle -= 360
     def suck_fish(self, fishholes):
         for fishhole in fishholes:
             if fishhole.has_fish:

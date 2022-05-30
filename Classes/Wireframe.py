@@ -6,6 +6,7 @@ from src.helper import deg_to_rad, rad_to_deg
 class Wireframe(object):
     def __init__(self):
         self.vector_font = pygame.font.SysFont("comicsa nsms", 20)
+        self.info_font = pygame.font.SysFont("consolas", 20)
 
     def draw_arrow(self, win, x, y, length, theta, color):
         delta_theta = 4
@@ -57,9 +58,29 @@ class Wireframe(object):
         pygame.draw.line(win, color, (x_arrow_tip, y), (x_arrow_tip, y_arrow_tip), 1)
 
     def draw_fishhole(self, win, fishhole):
-        pygame.draw.circle(win, (0, 0, 0), (fishhole.x, fishhole.y), 15)
+        pygame.draw.circle(win, (0, 0, 0), (fishhole.x, fishhole.y), 15, 1)
+        text = self.vector_font.render("Loch", False, (0, 0, 0))
+        win.blit(text, (fishhole.x - text.get_width() / 2, fishhole.y + 15))
         if fishhole.has_fish:
             fish = fishhole.fish
             pygame.draw.circle(win, (0, 0, 255), (fish.x, fish.y), 10)
             text = self.vector_font.render("Fisch", False, (0, 0, 255))
             win.blit(text, (fish.x - text.get_width() / 2, fish.y + 15))
+
+    def draw_info(self, x, y, game):
+        delta_y = 20
+        text = self.info_font.render("Roboter pos: x: %d y: %d" % (game.robot.x, game.robot.y), False, (0, 0, 0))
+        game.win.blit(text, (x, y + 0 * delta_y))
+        text = self.info_font.render("Roboter Winkel: %d" % game.robot.angle, False, (0, 0, 0))
+        game.win.blit(text, (x, y + 1 * delta_y))
+        vel = sqrt(game.robot.v_x**2 + game.robot.v_y**2)*10
+        vel_angle = rad_to_deg(atan2(game.robot.v_y, game.robot.v_x))
+        text = self.info_font.render("Geschwindigkeit: %d,  %d grad" % (vel,vel_angle), False, (0, 0, 0))
+        game.win.blit(text, (x, y + 2 * delta_y))
+        text = self.info_font.render("Punkte: %d" % game.robot.score, False, (0, 0, 0))
+        game.win.blit(text, (x, y + 3 * delta_y))
+        fish_on_screen = sum([i.has_fish for i in game.fishholes])
+        text = self.info_font.render("Fish on screen: %d" % fish_on_screen, False, (0, 0, 0))
+        game.win.blit(text, (x, y + 4 * delta_y))
+        text = self.info_font.render("Fuel: %d" % 100, False, (0, 0, 0))
+        game.win.blit(text, (x, y + 5 * delta_y))
