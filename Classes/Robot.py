@@ -127,6 +127,7 @@ class Robot(object):
         else:
             self.v_x = 0
             self.v_y = 0
+
     def suck_fish(self, fishholes):
         for fishhole in fishholes:
             if fishhole.has_fish:
@@ -144,4 +145,5 @@ class Robot(object):
                 fishhole.lose_fish()
                 self.score += 1
                 print("sucked fish, total: %d" % self.score)
-                print( "next fish time: %d seconds" % int( fishhole.next_fish_time - time()))
+                print("next fish time: %d seconds" % int(fishhole.next_fish_time - time()))
+        return fishholes

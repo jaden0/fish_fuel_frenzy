@@ -2,7 +2,8 @@ import pygame
 from Classes.Wireframe import Wireframe
 from Classes.Robot import Robot
 from Classes.Fishhole import Fishhole
-from time import  time
+from time import time
+
 
 class Game(object):
     def __init__(self):
@@ -17,46 +18,43 @@ class Game(object):
         self.wireframe = Wireframe()
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
         self.robot = Robot(int(self.game_width / 2), int(self.game_height / 2), 60)
-        self.fishholes = [Fishhole(100, 100), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400), Fishhole(1150, 150)]
-
+        self.fishholes = [Fishhole(100, 100), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400),
+                          Fishhole(1150, 150)]
 
     def draw(self):
         self.win.fill((230, 255, 255))
-        self.robot.draw(self.win)
+
         if self.render_active:
             # draw using objects
             for fishhole in self.fishholes:
                 if fishhole.has_fish:
                     fishhole.fish.draw(self.win)
+        self.robot.draw(self.win)
         if self.wireframe_active:
             for fishhole in self.fishholes:
                 self.wireframe.draw_robot(self.win, self.robot)
                 self.wireframe.draw_fishhole(self.win, fishhole)
-
             self.wireframe.draw_axes(self.win, self.game_width / 4)
 
         pygame.display.update()
-
 
     def check_fish(self):
         for fishhole in self.fishholes:
             if fishhole.has_fish:
                 continue
 
-
             # is robot near hole
             if (self.robot.x - fishhole.x) ** 2 + (self.robot.y - fishhole.y) ** 2 < self.min_robot_distance ** 2:
 
-                if fishhole.stop_timer == False:
+                if not fishhole.stop_timer:
                     fishhole.time_left = fishhole.next_fish_time - time()
                     print("too close")
-                    print( "stopping timer, with %.0f second(s)" % fishhole.time_left)
+                    print("stopping timer, with %.0f second(s)" % fishhole.time_left)
                     fishhole.stop_timer = True
             elif fishhole.stop_timer:
-                    fishhole.stop_timer = False
-                    fishhole.next_fish_time = time() + fishhole.time_left
-                    print( "starting timer with %.0f second(s) left" % fishhole.time_left)
-
+                fishhole.stop_timer = False
+                fishhole.next_fish_time = time() + fishhole.time_left
+                print("starting timer with %.0f second(s) left" % fishhole.time_left)
 
             # make new fish
             if time() > fishhole.next_fish_time and not fishhole.stop_timer:
@@ -89,9 +87,8 @@ class Game(object):
         else:
             self.change_ready = True
 
-
         self.robot.drift(self.game_width, self.game_height)
-        self.fisholes = self.robot.suck_fish(self.fishholes)
+        self.fishholes = self.robot.suck_fish(self.fishholes)
         self.check_fish()
         self.draw()
 
