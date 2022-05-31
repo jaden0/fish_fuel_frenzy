@@ -15,10 +15,11 @@ class Game(object):
         self.render_active = False
         self.change_ready = False
         pygame.init()
+        self.font = pygame.font.SysFont("comicsa nsms", 40)
         self.wireframe = Wireframe()
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
         self.robot = Robot(int(self.game_width / 2), int(self.game_height / 2), 60)
-        self.fishholes = [Fishhole(100, 100), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400),
+        self.fishholes = [Fishhole(100, 300), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400),
                           Fishhole(1150, 150)]
 
     def draw(self):
@@ -37,10 +38,14 @@ class Game(object):
                 self.wireframe.draw_fishhole(self.win, fishhole)
             self.robot.draw(self.win)
             self.wireframe.draw_robot(self.win, self.robot)
-
-
-
         pygame.display.update()
+
+    def draw_game_over(self):
+        self.win.fill((0, 0, 139))
+        text = self.font.render("GAME OVER", False, (200, 0, 0))
+        self.win.blit(text, (int(self.game_width / 2 - text.get_width() / 2), int(self.game_height / 2 - text.get_height() / 2)))
+        pygame.display.update()
+
 
     def check_fish(self):
         for fishhole in self.fishholes:
@@ -91,9 +96,13 @@ class Game(object):
         else:
             self.change_ready = True
 
-        self.robot.drift(self.game_width, self.game_height)
-        self.fishholes = self.robot.suck_fish(self.fishholes)
-        self.check_fish()
-        self.draw()
 
+
+        if self.robot.fuel < 1 and self.robot.v_x == 0 and self.robot.v_y == 0:
+            self.draw_game_over()
+        else:
+            self.robot.drift(self.game_width, self.game_height)
+            self.fishholes = self.robot.suck_fish(self.fishholes)
+            self.check_fish()
+            self.draw()
         return True

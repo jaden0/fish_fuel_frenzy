@@ -1,6 +1,6 @@
 import pygame
 from Classes.Wireframe import Wireframe
-from math import cos, sin, sqrt, atan2
+from math import *
 from src.helper import deg_to_rad, rad_to_deg
 from time import time
 
@@ -15,6 +15,9 @@ class Robot(object):
         self.fishtube_length = radius * 1.
         self.color = (128, 128, 128)
         self.angle = -46
+        self.fuel = 100
+        self.fuel_count_max = 100
+        self.fuel_counter = 0
         self.tread_1_state = 0
         self.tread_2_state = 0
         self.tread_count_max = 3
@@ -52,16 +55,20 @@ class Robot(object):
 
     def move(self, instruction):
         changed_state = False
+        if self.fuel < 1:
+            return()
         if instruction == "right":  # inside each of these, you need to increase the counter
             self.angle += self.angle_step
             self.tread_1_counter -= 1
             self.tread_2_counter += 1
             changed_state = True
+            self.fuel_counter += 1
         if instruction == "left":
             self.angle -= self.angle_step
             self.tread_1_counter += 1
             self.tread_2_counter -= 1
             changed_state = True
+            self.fuel_counter += 1
         if instruction == "forward":
             self.v_x += self.acceleration * cos(deg_to_rad(self.angle))
             self.v_y += self.acceleration * sin(deg_to_rad(self.angle))
@@ -71,6 +78,7 @@ class Robot(object):
             self.tread_1_counter += 1
             self.tread_2_counter += 1
             changed_state = True
+            self.fuel_counter += 3
         if instruction == "backwards":
             self.v_x -= self.back_acceleration * cos(deg_to_rad(self.angle))
             self.v_y -= self.back_acceleration * sin(deg_to_rad(self.angle))
@@ -80,6 +88,7 @@ class Robot(object):
             self.tread_1_counter -= .75
             self.tread_2_counter -= .75
             changed_state = True
+            self.fuel_counter += 2
         if self.tread_1_counter < 0:
             self.tread_1_state -= 1
             changed_state = True
@@ -109,6 +118,12 @@ class Robot(object):
             self.update_image()
 
     def drift(self, game_width, game_height):
+        self.fuel_counter += 1
+        if self.fuel_counter >= self.fuel_count_max:
+            self.fuel_counter = 0
+            self.fuel -= 1
+        if self.fuel < 0:
+            self.fuel = 0
         if self.x + self.v_x - self.radius < 0:
             self.v_x -= 1.5 * self.v_x
         if self.y + self.v_y - self.radius < 0:
@@ -131,6 +146,8 @@ class Robot(object):
             self.angle += 360
         if self.angle > 360:
             self.angle -= 360
+
+
     def suck_fish(self, fishholes):
         for fishhole in fishholes:
             if fishhole.has_fish:

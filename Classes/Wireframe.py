@@ -82,5 +82,5 @@ class Wireframe(object):
         fish_on_screen = sum([i.has_fish for i in game.fishholes])
         text = self.info_font.render("Fish on screen: %d" % fish_on_screen, False, (0, 0, 0))
         game.win.blit(text, (x, y + 4 * delta_y))
-        text = self.info_font.render("Fuel: %d" % 100, False, (0, 0, 0))
+        text = self.info_font.render("Fuel: %d" % game.robot.fuel, False, (0, 0, 0))
         game.win.blit(text, (x, y + 5 * delta_y))
