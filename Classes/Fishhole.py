@@ -22,12 +22,14 @@ class Fishhole(object):
 
     def make_fish(self):
         angle = random.randint(0, 360)
-        fish_x = self.x + self.fish_distance * cos(deg_to_rad(angle))
-        fish_y = self.y + self.fish_distance * sin(deg_to_rad(angle))
-        fish = Fish(fish_x, fish_y)
+        vel = 2 + random.random() * 3
+        #fish_x = self.x + self.fish_distance * cos(deg_to_rad(angle))
+        #fish_y = self.y + self.fish_distance * sin(deg_to_rad(angle))
+        v_x = vel * cos(deg_to_rad(angle))
+        v_y = vel * sin(deg_to_rad(angle))
+        fish = Fish(self.x, self.y, v_x, v_y)
         self.has_fish = True
         self.fish = fish
-        print( "new fish")
 
     def lose_fish(self):
         self.has_fish = False

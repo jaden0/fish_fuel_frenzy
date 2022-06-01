@@ -63,7 +63,7 @@ class Wireframe(object):
         win.blit(text, (fishhole.x - text.get_width() / 2, fishhole.y + 15))
         if fishhole.has_fish:
             fish = fishhole.fish
-            pygame.draw.circle(win, (0, 0, 255), (fish.x, fish.y), 10)
+            pygame.draw.circle(win, (0, 0, 255), (fish.x, fish.y), fish.radius)
             text = self.vector_font.render("Fisch", False, (0, 0, 255))
             win.blit(text, (fish.x - text.get_width() / 2, fish.y + 15))
 
@@ -84,3 +84,8 @@ class Wireframe(object):
         game.win.blit(text, (x, y + 4 * delta_y))
         text = self.info_font.render("Fuel: %d" % game.robot.fuel, False, (0, 0, 0))
         game.win.blit(text, (x, y + 5 * delta_y))
+
+    def draw_fuel(self, win, fuel):
+        pygame.draw.rect(win, (255, 0, 0), (fuel.x - 10, fuel.y - 14, 20, 28), 4)
+        text = self.vector_font.render("Diesel", False, (255, 0, 0))
+        win.blit(text, (fuel.x - text.get_width() / 2, fuel.y + 15))

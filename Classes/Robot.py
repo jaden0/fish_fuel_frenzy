@@ -167,3 +167,16 @@ class Robot(object):
                 print("sucked fish, total: %d" % self.score)
                 print("next fish time: %d seconds" % int(fishhole.next_fish_time - time()))
         return fishholes
+
+
+    def suck_fuel(self, fuel):
+        sucked = False
+        fishtube_x = self.x + self.fishtube_length * cos(deg_to_rad(self.angle))
+        fishtube_y = self.y + self.fishtube_length * sin(deg_to_rad(self.angle))
+        if (fuel.x - self.x) ** 2 + (fuel.y - self.y) ** 2 < self.radius ** 2:
+            sucked = True
+        if (fuel.x - fishtube_x) ** 2 + (fuel.y - fishtube_y) ** 2 < self.fishtube_radius ** 2:
+            sucked = True
+        if sucked:
+            self.fuel += 100
+        return(sucked)

@@ -3,7 +3,7 @@ from Classes.Wireframe import Wireframe
 from Classes.Robot import Robot
 from Classes.Fishhole import Fishhole
 from time import time
-
+from Classes.Fuel import Fuel
 
 class Game(object):
     def __init__(self):
@@ -21,6 +21,7 @@ class Game(object):
         self.robot = Robot(int(self.game_width / 2), int(self.game_height / 2), 60)
         self.fishholes = [Fishhole(100, 300), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400),
                           Fishhole(1150, 150)]
+        self.fuel = Fuel(500, 500)
 
     def draw(self):
         self.win.fill((230, 255, 255))
@@ -33,7 +34,8 @@ class Game(object):
         if self.wireframe_active:
             self.wireframe.draw_axes(self.win, self.game_width / 4)
             self.wireframe.draw_info(50, 50, self)
-
+            if self.fuel is not None:
+                self.wireframe.draw_fuel(self.win, self.fuel)
             for fishhole in self.fishholes:
                 self.wireframe.draw_fishhole(self.win, fishhole)
             self.robot.draw(self.win)
@@ -45,6 +47,14 @@ class Game(object):
         text = self.font.render("GAME OVER", False, (200, 0, 0))
         self.win.blit(text, (int(self.game_width / 2 - text.get_width() / 2), int(self.game_height / 2 - text.get_height() / 2)))
         pygame.display.update()
+
+
+    def check_fuel(self):
+        if self.fuel is None:
+            return()
+        if self.robot.suck_fuel(self.fuel):
+            self.fuel = None
+            #TODO: start new fuel timer and make new fuel
 
 
     def check_fish(self):
@@ -68,6 +78,7 @@ class Game(object):
             # make new fish
             if time() > fishhole.next_fish_time and not fishhole.stop_timer:
                 fishhole.make_fish()
+
 
     def tick(self):
         self.clock.tick(60)
@@ -96,7 +107,9 @@ class Game(object):
         else:
             self.change_ready = True
 
-
+        for fishhole in self.fishholes:
+            if fishhole.has_fish:
+                fishhole.fish.slide(self)
 
         if self.robot.fuel < 1 and self.robot.v_x == 0 and self.robot.v_y == 0:
             self.draw_game_over()
@@ -104,5 +117,6 @@ class Game(object):
             self.robot.drift(self.game_width, self.game_height)
             self.fishholes = self.robot.suck_fish(self.fishholes)
             self.check_fish()
+            self.check_fuel()
             self.draw()
         return True
