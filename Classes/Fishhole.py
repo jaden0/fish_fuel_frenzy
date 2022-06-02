@@ -23,16 +23,23 @@ class Fishhole(object):
         image = pygame.image.load(image_filename)
         image = pygame.transform.scale(image, (self.radius * 4, self.radius * 4))
         self.image = image
+        self.fish_image = []
+        self.fish_width = self.radius*4
+        self.fish_height = self.radius *3
+        for i in range(0,9):
+            image_filename = "Images/fish_%d.png" % i
+            self.fish_image.append(pygame.transform.scale(pygame.image.load(image_filename), (self.fish_width, self.fish_height)))
 
 
     def make_fish(self):
         angle = random.randint(0, 360)
-        vel = 2 + random.random() * 3
+        vel = 1.5 + random.random() * .5
         # fish_x = self.x + self.fish_distance * cos(deg_to_rad(angle))
         # fish_y = self.y + self.fish_distance * sin(deg_to_rad(angle))
         v_x = vel * cos(deg_to_rad(angle))
         v_y = vel * sin(deg_to_rad(angle))
         fish = Fish(self.x, self.y, v_x, v_y)
+        fish.image = self.fish_image
         self.has_fish = True
         self.fish = fish
 

@@ -22,6 +22,10 @@ class Game(object):
         self.fuel_time_counter = 60
         self.fuel_timer = 0
         self.next_fuel_time = time()
+        image_filename = "Images/ice.png"
+        image = pygame.image.load(image_filename)
+        image = pygame.transform.scale(image, (self.game_width, self.game_height))
+        self.ice_background = image
         pygame.init()
         self.font = pygame.font.SysFont("comicsa nsms", 40)
         self.wireframe = Wireframe()
@@ -33,9 +37,9 @@ class Game(object):
 
     def draw(self):
         self.win.fill((230, 255, 255))
-
         if self.render_active:
             # draw using objects
+            self.win.blit(self.ice_background, (0, 0))
             for fishhole in self.fishholes:
                 fishhole.draw(self.win)
                 if fishhole.has_fish:
