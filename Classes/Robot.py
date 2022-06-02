@@ -15,7 +15,7 @@ class Robot(object):
         self.fishtube_length = radius * 1.
         self.color = (128, 128, 128)
         self.angle = -46
-        self.fuel = 100
+        self.fuel = 20
         self.fuel_count_max = 100
         self.fuel_counter = 0
         self.tread_1_state = 0
@@ -32,6 +32,7 @@ class Robot(object):
         self.back_acceleration = self.acceleration / 2
         self.max_speed = 10
         self.images = []
+        self.suck_fish_sound = pygame.mixer.Sound("Sounds/fish_suck_1.mp3")
         for i in range(0, 3):
             temp = []
             for j in range(0, 3):
@@ -56,7 +57,7 @@ class Robot(object):
     def move(self, instruction):
         changed_state = False
         if self.fuel < 1:
-            return()
+            return ()
         if instruction == "right":  # inside each of these, you need to increase the counter
             self.angle += self.angle_step
             self.tread_1_counter -= 1
@@ -147,7 +148,6 @@ class Robot(object):
         if self.angle > 360:
             self.angle -= 360
 
-
     def suck_fish(self, fishholes):
         for fishhole in fishholes:
             if fishhole.has_fish:
@@ -162,12 +162,12 @@ class Robot(object):
             if (fish.x - fishtube_x) ** 2 + (fish.y - fishtube_y) ** 2 < self.fishtube_radius ** 2:
                 sucked = True
             if sucked:
+                pygame.mixer.Sound.play(self.suck_fish_sound)
                 fishhole.lose_fish()
                 self.score += 1
                 print("sucked fish, total: %d" % self.score)
                 print("next fish time: %d seconds" % int(fishhole.next_fish_time - time()))
         return fishholes
-
 
     def suck_fuel(self, fuel):
         sucked = False
@@ -178,5 +178,5 @@ class Robot(object):
         if (fuel.x - fishtube_x) ** 2 + (fuel.y - fishtube_y) ** 2 < self.fishtube_radius ** 2:
             sucked = True
         if sucked:
-            self.fuel += 100
-        return(sucked)
+            self.fuel += 20
+        return sucked

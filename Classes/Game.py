@@ -1,9 +1,12 @@
+import random
+
 import pygame
 from Classes.Wireframe import Wireframe
 from Classes.Robot import Robot
 from Classes.Fishhole import Fishhole
 from time import time
 from Classes.Fuel import Fuel
+
 
 class Game(object):
     def __init__(self):
@@ -14,6 +17,11 @@ class Game(object):
         self.wireframe_active = True
         self.render_active = False
         self.change_ready = False
+        self.fuel_time_scaler = 5
+        self.fuel_time_scaler2 = 10
+        self.fuel_time_counter = 60
+        self.fuel_timer = 0
+        self.next_fuel_time = time()
         pygame.init()
         self.font = pygame.font.SysFont("comicsa nsms", 40)
         self.wireframe = Wireframe()
@@ -21,7 +29,7 @@ class Game(object):
         self.robot = Robot(int(self.game_width / 2), int(self.game_height / 2), 60)
         self.fishholes = [Fishhole(100, 300), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400),
                           Fishhole(1150, 150)]
-        self.fuel = Fuel(500, 500)
+        self.fuel = None
 
     def draw(self):
         self.win.fill((230, 255, 255))
@@ -29,8 +37,12 @@ class Game(object):
         if self.render_active:
             # draw using objects
             for fishhole in self.fishholes:
+                fishhole.draw(self.win)
                 if fishhole.has_fish:
                     fishhole.fish.draw(self.win)
+            if self.fuel is not None:
+                self.fuel.draw(self.win)
+            self.robot.draw(self.win)
         if self.wireframe_active:
             self.wireframe.draw_axes(self.win, self.game_width / 4)
             self.wireframe.draw_info(50, 50, self)
@@ -38,24 +50,45 @@ class Game(object):
                 self.wireframe.draw_fuel(self.win, self.fuel)
             for fishhole in self.fishholes:
                 self.wireframe.draw_fishhole(self.win, fishhole)
-            self.robot.draw(self.win)
+            #self.robot.draw(self.win)
             self.wireframe.draw_robot(self.win, self.robot)
         pygame.display.update()
 
     def draw_game_over(self):
         self.win.fill((0, 0, 139))
         text = self.font.render("GAME OVER", False, (200, 0, 0))
-        self.win.blit(text, (int(self.game_width / 2 - text.get_width() / 2), int(self.game_height / 2 - text.get_height() / 2)))
+        self.win.blit(text, (
+            int(self.game_width / 2 - text.get_width() / 2), int(self.game_height / 2 - text.get_height() / 2)))
         pygame.display.update()
 
-
     def check_fuel(self):
+        self.fuel_time_counter -= 1
+        if self.fuel_time_counter <= 0:
+            self.fuel_time_counter = 60
+            self.fuel_timer -= 1
+        #if self.fuel_timer <= 0 and self.fuel is None:
+        if self.next_fuel_time < time() and self.fuel is None:
+            self.fuel = Fuel(random.randint(0, self.game_width), random.randint(0, self.game_height))
+        if self.robot.fuel > 100:
+            self.robot.fuel = 100
         if self.fuel is None:
-            return()
+            return ()
         if self.robot.suck_fuel(self.fuel):
+            #self.fuel_timer = random.randint(self.fuel_time_scaler, self.fuel_time_scaler2)
+            self.next_fuel_time = time() + random.randint(self.fuel_time_scaler, self.fuel_time_scaler2)
+            self.fuel_time_scaler2 += 5
+            self.fuel_time_scaler += 1
             self.fuel = None
-            #TODO: start new fuel timer and make new fuel
 
+    def restart(self):
+        self.fuel = None
+        self.fuel_timer = 0
+        self.robot.fuel = 20
+        self.robot.score = 0
+        for fishhole in self.fishholes:
+            fishhole.has_fish = False
+        self.robot.x = int(self.game_width / 2)
+        self.robot.y = int(self.game_height / 2)
 
     def check_fish(self):
         for fishhole in self.fishholes:
@@ -79,7 +112,6 @@ class Game(object):
             if time() > fishhole.next_fish_time and not fishhole.stop_timer:
                 fishhole.make_fish()
 
-
     def tick(self):
         self.clock.tick(60)
 
@@ -97,8 +129,10 @@ class Game(object):
             self.robot.move("left")
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.robot.move("forward")
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+        elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.robot.move("backwards")
+        if keys[pygame.K_SPACE] and self.robot.fuel < 1:
+            self.restart()
         if keys[pygame.K_i]:
             if self.change_ready:
                 self.wireframe_active = not self.wireframe_active

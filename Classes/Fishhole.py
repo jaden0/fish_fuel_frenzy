@@ -5,6 +5,7 @@ from src.helper import deg_to_rad
 from math import cos, sin
 from time import time
 
+
 class Fishhole(object):
     def __init__(self, x, y):
         self.x = x
@@ -17,14 +18,18 @@ class Fishhole(object):
         self.time_left = None
         self.fish = None
         self.stop_timer = False
-
+        self.radius = 15
+        image_filename = "Images/hole_new.png"
+        image = pygame.image.load(image_filename)
+        image = pygame.transform.scale(image, (self.radius * 4, self.radius * 4))
+        self.image = image
 
 
     def make_fish(self):
         angle = random.randint(0, 360)
         vel = 2 + random.random() * 3
-        #fish_x = self.x + self.fish_distance * cos(deg_to_rad(angle))
-        #fish_y = self.y + self.fish_distance * sin(deg_to_rad(angle))
+        # fish_x = self.x + self.fish_distance * cos(deg_to_rad(angle))
+        # fish_y = self.y + self.fish_distance * sin(deg_to_rad(angle))
         v_x = vel * cos(deg_to_rad(angle))
         v_y = vel * sin(deg_to_rad(angle))
         fish = Fish(self.x, self.y, v_x, v_y)
@@ -35,3 +40,6 @@ class Fishhole(object):
         self.has_fish = False
         self.fish = None
         self.next_fish_time = time() + random.gauss(self.mu, self.sigma)
+
+    def draw(self, win):
+        win.blit(self.image, (self.x - self.image.get_width() / 2, self.y - self.image.get_height() / 2))
