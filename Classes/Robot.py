@@ -15,7 +15,7 @@ class Robot(object):
         self.fishtube_length = radius * 1.
         self.color = (128, 128, 128)
         self.angle = -46
-        self.fuel = 20
+        self.fuel = 0
         self.fuel_count_max = 100
         self.fuel_counter = 0
         self.tread_1_state = 0
@@ -33,6 +33,13 @@ class Robot(object):
         self.max_speed = 10
         self.images = []
         self.suck_fish_sound = pygame.mixer.Sound("Sounds/fish_suck_1.mp3")
+        self.motor_low_sound = pygame.mixer.Sound("Sounds/motor.mp3")
+        self.motor_high_sound = pygame.mixer.Sound("Sounds/motor_high.mp3")
+        self.motor_low_sound.set_volume(.4)
+        self.motor_high_sound.set_volume(.4)
+        self.motor_running = True
+        self.motor_running_high = False
+
         for i in range(0, 3):
             temp = []
             for j in range(0, 3):
@@ -116,9 +123,12 @@ class Robot(object):
             self.tread_1_state = 2
         # if counter is less than 0, or more than max time steps, then change state, and counter
         if changed_state:
+            self.motor_running_high = True
             self.update_image()
+        else:
+            self.motor_running_high = False
 
-    def drift(self, game_width, game_height):
+    def drift(self, game_width, score_height, game_height):
         self.fuel_counter += 1
         if self.fuel_counter >= self.fuel_count_max:
             self.fuel_counter = 0
@@ -127,7 +137,7 @@ class Robot(object):
             self.fuel = 0
         if self.x + self.v_x - self.radius < 0:
             self.v_x -= 1.5 * self.v_x
-        if self.y + self.v_y - self.radius < 0:
+        if self.y + self.v_y - self.radius < score_height:
             self.v_y -= 1.5 * self.v_y
         if self.x + self.v_x + self.radius > game_width:
             self.v_x -= 1.5 * self.v_x
@@ -147,6 +157,7 @@ class Robot(object):
             self.angle += 360
         if self.angle > 360:
             self.angle -= 360
+
 
     def suck_fish(self, fishholes):
         for fishhole in fishholes:

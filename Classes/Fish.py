@@ -20,7 +20,7 @@ class Fish(object):
         vel = self.v_x**2 + self.v_y**2
         if self.x + self.v_x - self.radius < 0:
             self.v_x -= 1.5 * self.v_x
-        if self.y + self.v_y - self.radius < 0:
+        if self.y + self.v_y - self.radius < game.score_height:
             self.v_y -= 1.5 * self.v_y
         if self.x + self.v_x + self.radius > game.game_width:
             self.v_x -= 1.5 * self.v_x

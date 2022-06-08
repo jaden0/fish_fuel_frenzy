@@ -26,6 +26,7 @@ class Fishhole(object):
         self.fish_image = []
         self.fish_width = self.radius*4
         self.fish_height = self.radius *3
+        self.splash_sound = pygame.mixer.Sound("Sounds/splash.mp3")
         for i in range(0,9):
             image_filename = "Images/fish_%d.png" % i
             self.fish_image.append(pygame.transform.scale(pygame.image.load(image_filename), (self.fish_width, self.fish_height)))
@@ -42,6 +43,7 @@ class Fishhole(object):
         fish.image = self.fish_image
         self.has_fish = True
         self.fish = fish
+        pygame.mixer.Sound.play(self.splash_sound)
 
     def lose_fish(self):
         self.has_fish = False

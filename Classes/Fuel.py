@@ -7,7 +7,7 @@ class Fuel(object):
         self.y = y
         image_filename = "Images/fuel.png"
         image = pygame.image.load(image_filename)
-        image = pygame.transform.scale(image, (60, 84))
+        image = pygame.transform.scale(image, (40, 63))
         self.image = image
 
     def draw(self, win):

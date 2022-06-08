@@ -6,6 +6,7 @@ from Classes.Robot import Robot
 from Classes.Fishhole import Fishhole
 from time import time
 from Classes.Fuel import Fuel
+from Classes.Scorebar import Scorebar
 
 
 class Game(object):
@@ -13,9 +14,10 @@ class Game(object):
         self.clock = pygame.time.Clock()
         self.game_width = 1300
         self.game_height = 700
+        self.score_height = 100
         self.min_robot_distance = 150
-        self.wireframe_active = True
-        self.render_active = False
+        self.wireframe_active = False
+        self.render_active = True
         self.change_ready = False
         self.fuel_time_scaler = 5
         self.fuel_time_scaler2 = 10
@@ -24,22 +26,24 @@ class Game(object):
         self.next_fuel_time = time()
         image_filename = "Images/ice.png"
         image = pygame.image.load(image_filename)
-        image = pygame.transform.scale(image, (self.game_width, self.game_height))
+        image = pygame.transform.scale(image, (self.game_width, self.game_height-self.score_height))
         self.ice_background = image
         pygame.init()
         self.font = pygame.font.SysFont("comicsa nsms", 40)
         self.wireframe = Wireframe()
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
-        self.robot = Robot(int(self.game_width / 2), int(self.game_height / 2), 60)
+        self.robot = Robot(int(self.game_width / 2), int((self.game_height+2*self.score_height) / 2), 60)
         self.fishholes = [Fishhole(100, 300), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400),
                           Fishhole(1150, 150)]
         self.fuel = None
+        self.music = pygame.mixer.music.load( "Sounds/music.mp3")
+        self.scorebar = Scorebar()
 
     def draw(self):
         self.win.fill((230, 255, 255))
         if self.render_active:
             # draw using objects
-            self.win.blit(self.ice_background, (0, 0))
+            self.win.blit(self.ice_background, (0, self.score_height))
             for fishhole in self.fishholes:
                 fishhole.draw(self.win)
                 if fishhole.has_fish:
@@ -47,6 +51,7 @@ class Game(object):
             if self.fuel is not None:
                 self.fuel.draw(self.win)
             self.robot.draw(self.win)
+            self.scorebar.draw_fuel_bar(self.win, self.robot.fuel, 50,20)
         if self.wireframe_active:
             self.wireframe.draw_axes(self.win, self.game_width / 4)
             self.wireframe.draw_info(50, 50, self)
@@ -72,7 +77,7 @@ class Game(object):
             self.fuel_timer -= 1
         #if self.fuel_timer <= 0 and self.fuel is None:
         if self.next_fuel_time < time() and self.fuel is None:
-            self.fuel = Fuel(random.randint(0, self.game_width), random.randint(0, self.game_height))
+            self.fuel = Fuel(random.randint(0, self.game_width), random.randint(self.score_height, self.game_height))
         if self.robot.fuel > 100:
             self.robot.fuel = 100
         if self.fuel is None:
@@ -89,10 +94,14 @@ class Game(object):
         self.fuel_timer = 0
         self.robot.fuel = 20
         self.robot.score = 0
+        self.robot.angle = -46
+        self.robot.update_image()
         for fishhole in self.fishholes:
             fishhole.has_fish = False
         self.robot.x = int(self.game_width / 2)
         self.robot.y = int(self.game_height / 2)
+        pygame.mixer.music.play(loops = -1)
+#        self.robot.motor_low_sound.play(loops = -1)
 
     def check_fish(self):
         for fishhole in self.fishholes:
@@ -151,8 +160,9 @@ class Game(object):
 
         if self.robot.fuel < 1 and self.robot.v_x == 0 and self.robot.v_y == 0:
             self.draw_game_over()
+            pygame.mixer.music.stop()
         else:
-            self.robot.drift(self.game_width, self.game_height)
+            self.robot.drift(self.game_width, self.score_height, self.game_height)
             self.fishholes = self.robot.suck_fish(self.fishholes)
             self.check_fish()
             self.check_fuel()
