@@ -37,7 +37,8 @@ class Game(object):
                           Fishhole(1150, 150)]
         self.fuel = None
         self.music = pygame.mixer.music.load( "Sounds/music.mp3")
-        self.scorebar = Scorebar()
+        self.scorebar = Scorebar(self)
+        self.high_score = 0
 
     def draw(self):
         self.win.fill((230, 255, 255))
@@ -51,7 +52,8 @@ class Game(object):
             if self.fuel is not None:
                 self.fuel.draw(self.win)
             self.robot.draw(self.win)
-            self.scorebar.draw_fuel_bar(self.win, self.robot.fuel, 50,20)
+            self.scorebar.draw_fuel_bar(self.win, self.robot.fuel)
+            self.scorebar.draw_score(self.win, self.robot.score, self.high_score)
         if self.wireframe_active:
             self.wireframe.draw_axes(self.win, self.game_width / 4)
             self.wireframe.draw_info(50, 50, self)
@@ -65,9 +67,17 @@ class Game(object):
 
     def draw_game_over(self):
         self.win.fill((0, 0, 139))
+        y_space = 50
         text = self.font.render("GAME OVER", False, (200, 0, 0))
         self.win.blit(text, (
             int(self.game_width / 2 - text.get_width() / 2), int(self.game_height / 2 - text.get_height() / 2)))
+        text = self.font.render("Punktzahl: %d" % self.robot.score, False, (200, 0, 0))
+        self.win.blit(text, (
+            int(self.game_width / 2 - text.get_width() / 2), y_space + int(self.game_height / 2 - text.get_height() / 2)))
+        text = self.font.render("Highscore: %d" % self.high_score, False, (200, 0, 0))
+        self.win.blit(text, (
+            int(self.game_width / 2 - text.get_width() / 2),
+            2*y_space + int(self.game_height / 2 - text.get_height() / 2)))
         pygame.display.update()
 
     def check_fuel(self):
@@ -92,12 +102,12 @@ class Game(object):
     def restart(self):
         self.fuel = None
         self.fuel_timer = 0
-        self.robot.fuel = 20
+        self.robot.fuel = 50
         self.robot.score = 0
         self.robot.angle = -46
         self.robot.update_image()
         for fishhole in self.fishholes:
-            fishhole.has_fish = False
+            fishhole.lose_fish()
         self.robot.x = int(self.game_width / 2)
         self.robot.y = int(self.game_height / 2)
         pygame.mixer.music.play(loops = -1)
@@ -159,6 +169,8 @@ class Game(object):
                 fishhole.fish.slide(self)
 
         if self.robot.fuel < 1 and self.robot.v_x == 0 and self.robot.v_y == 0:
+            if self.robot.score > self.high_score:
+                self.high_score = self.robot.score
             self.draw_game_over()
             pygame.mixer.music.stop()
         else:

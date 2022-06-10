@@ -82,10 +82,10 @@ class Wireframe(object):
         fish_on_screen = sum([i.has_fish for i in game.fishholes])
         text = self.info_font.render("Fish on screen: %d" % fish_on_screen, False, (0, 0, 0))
         game.win.blit(text, (x, y + 4 * delta_y))
-        text = self.info_font.render("Fuel: %d" % game.robot.fuel, False, (0, 0, 0))
+        text = self.info_font.render("Benzin: %d" % game.robot.fuel, False, (0, 0, 0))
         game.win.blit(text, (x, y + 5 * delta_y))
 
     def draw_fuel(self, win, fuel):
         pygame.draw.rect(win, (255, 0, 0), (fuel.x - 10, fuel.y - 14, 20, 28), 4)
-        text = self.vector_font.render("Diesel", False, (255, 0, 0))
+        text = self.vector_font.render("Benzin", False, (255, 0, 0))
         win.blit(text, (fuel.x - text.get_width() / 2, fuel.y + 15))
