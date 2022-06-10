@@ -44,12 +44,12 @@ class Fuel(object):
     def drop_fuel(self):
         self.new_location()
         self.state = "dropping"
-        self.fall_timer = 200
+        self.fall_timer = 300
 
     def fall(self, win):
         self.fall_timer -= 1
         self.y_shift = self.fall_timer * 2
-        self.x_shift = sin( self.fall_timer / 20 ) * 100
+        self.x_shift = sin( self.fall_timer / 20 ) * 200
         if self.fall_timer < 1:
             self.land()
 
@@ -67,5 +67,7 @@ class Fuel(object):
             w = self.image.get_width() * (1 + self.fall_timer / 100)
             h = self.image.get_height()* (1 + self.fall_timer / 100)
             win.blit(pygame.transform.scale(self.image, (w,h)), (int(self.x - self.image.get_width() / 2 - self.x_shift), self.y - self.image.get_height() / 2 - self.y_shift))
-            #if self.state == "dropping":
-            #    win.blit(pygame.transform.scale(self.parachute_image, (w,h)),(int(self.x - self.image.get_width() / 2 - self.x_shift), self.y - self.image.get_height() / 2 - self.y_shift-self.parachute_image.get_height()))
+            if self.state == "dropping":
+                wp = self.parachute_image.get_width() * (1 + self.fall_timer / 100)
+                hp = self.parachute_image.get_height() * (1 + self.fall_timer / 100)
+                win.blit(pygame.transform.scale(self.parachute_image, (wp,hp)),(int(self.x - self.image.get_width() / 2 - self.x_shift - w*.35),self.y - self.image.get_height() / 2 - self.y_shift- hp + h*.15))

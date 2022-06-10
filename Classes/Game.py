@@ -32,12 +32,12 @@ class Game(object):
         self.font = pygame.font.SysFont("comicsa nsms", 40)
         self.wireframe = Wireframe()
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
-        self.robot = Robot(int(self.game_width / 2), int((self.game_height+2*self.score_height) / 2), 60)
+        self.robot = Robot(int(self.game_width / 2), int((self.game_height+2*self.score_height) / 2), 40)
         self.fishholes = [Fishhole(100, 300), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400),Fishhole(1150, 150)]
         self.fuel = Fuel(self)
         self.music = pygame.mixer.music.load( "Sounds/music.mp3")
         self.scorebar = Scorebar(self)
-        self.high_score = 0
+        self.high_score = 10
 
     def draw(self):
         self.win.fill((230, 255, 255))
@@ -56,7 +56,7 @@ class Game(object):
         if self.wireframe_active:
             self.wireframe.draw_axes(self.win, self.game_width / 4)
             self.wireframe.draw_info(50, 50, self)
-            if self.fuel is not None:
+            if self.fuel.state == "landed":
                 self.wireframe.draw_fuel(self.win, self.fuel)
             for fishhole in self.fishholes:
                 self.wireframe.draw_fishhole(self.win, fishhole)
@@ -183,7 +183,7 @@ class Game(object):
             if self.robot.score > self.high_score:
                 self.high_score = self.robot.score
             self.draw_game_over()
-            pygame.mixer.music.stop()
+            pygame.mixer.music.fadeout(2000)
         else:
             self.robot.drift(self.game_width, self.score_height, self.game_height)
             self.fishholes = self.robot.suck_fish(self.fishholes)
