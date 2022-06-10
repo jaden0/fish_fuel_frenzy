@@ -33,9 +33,8 @@ class Game(object):
         self.wireframe = Wireframe()
         self.win = pygame.display.set_mode((self.game_width, self.game_height))
         self.robot = Robot(int(self.game_width / 2), int((self.game_height+2*self.score_height) / 2), 60)
-        self.fishholes = [Fishhole(100, 300), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400),
-                          Fishhole(1150, 150)]
-        self.fuel = None
+        self.fishholes = [Fishhole(100, 300), Fishhole(1100, 500), Fishhole(300, 600), Fishhole(600, 400),Fishhole(1150, 150)]
+        self.fuel = Fuel(self)
         self.music = pygame.mixer.music.load( "Sounds/music.mp3")
         self.scorebar = Scorebar(self)
         self.high_score = 0
@@ -80,12 +79,12 @@ class Game(object):
             2*y_space + int(self.game_height / 2 - text.get_height() / 2)))
         pygame.display.update()
 
-    def check_fuel(self):
+    def check_fuel_old(self):
+        crash
         self.fuel_time_counter -= 1
         if self.fuel_time_counter <= 0:
             self.fuel_time_counter = 60
             self.fuel_timer -= 1
-        #if self.fuel_timer <= 0 and self.fuel is None:
         if self.next_fuel_time < time() and self.fuel is None:
             self.fuel = Fuel(random.randint(0, self.game_width), random.randint(self.score_height, self.game_height))
         if self.robot.fuel > 100:
@@ -99,9 +98,21 @@ class Game(object):
             self.fuel_time_scaler += 1
             self.fuel = None
 
+    def check_fuel(self):
+        if self.fuel.state == "landed":
+            if self.robot.suck_fuel(self.fuel):
+                self.fuel.sucked()
+            return()
+        if self.fuel.next_fuel_time < time():
+            self.fuel.drop_fuel()
+        if self.fuel.state == "dropping":
+            self.fuel.fall(self.win)
+
+
+
+
     def restart(self):
-        self.fuel = None
-        self.fuel_timer = 0
+        self.fuel.drop_fuel()
         self.robot.fuel = 50
         self.robot.score = 0
         self.robot.angle = -46
