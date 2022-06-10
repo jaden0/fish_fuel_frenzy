@@ -35,7 +35,7 @@ class Robot(object):
         self.suck_fish_sound = pygame.mixer.Sound("Sounds/fish_suck_1.mp3")
         self.motor_low_sound = pygame.mixer.Sound("Sounds/motor.mp3")
         self.motor_high_sound = pygame.mixer.Sound("Sounds/motor_high.mp3")
-        self.motor_low_sound.set_volume(.4)
+        self.motor_low_sound.set_volume(.2)
         self.motor_high_sound.set_volume(.4)
         self.motor_running = True
         self.motor_running_high = False
@@ -123,10 +123,14 @@ class Robot(object):
             self.tread_1_state = 2
         # if counter is less than 0, or more than max time steps, then change state, and counter
         if changed_state:
-            self.motor_running_high = True
+            if not self.motor_running_high:
+                self.motor_high_sound.play()
+                self.motor_running_high = True
             self.update_image()
         else:
-            self.motor_running_high = False
+            if self.motor_running_high:
+                self.motor_high_sound.fadeout(250)
+                self.motor_running_high = False
 
     def drift(self, game_width, score_height, game_height):
         self.fuel_counter += 1

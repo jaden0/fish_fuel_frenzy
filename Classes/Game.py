@@ -78,6 +78,12 @@ class Game(object):
             int(self.game_width / 2 - text.get_width() / 2),
             2*y_space + int(self.game_height / 2 - text.get_height() / 2)))
         pygame.display.update()
+        if self.robot.motor_running:
+            self.robot.motor_low_sound.fadeout(3000)
+            self.robot.motor_running = False
+        if self.robot.motor_running_high:
+            self.robot.motor_high_sound.fadeout(250)
+            self.robot.motor_running_high = False
 
     def check_fuel_old(self):
         crash
@@ -112,6 +118,8 @@ class Game(object):
 
 
     def restart(self):
+        self.robot.motor_low_sound.play(loops = -1)
+        self.robot.motor_running = True
         self.fuel.drop_fuel()
         self.robot.fuel = 50
         self.robot.score = 0
@@ -157,6 +165,8 @@ class Game(object):
 
         if keys[pygame.K_ESCAPE]:
             return False
+        if sum(keys) == 0:
+            self.robot.move("nothing")
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.robot.move("right")
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
