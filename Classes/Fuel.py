@@ -36,6 +36,7 @@ class Fuel(object):
         self.next_fuel_time = time() + random.randint(self.fuel_time_scaler, self.fuel_time_scaler2)
         self.fuel_time_scaler2 += 5
         self.fuel_time_scaler += 1
+        print( "next fuel time: %d seconds" % (self.next_fuel_time - time()))
 
     def land(self):
         self.state = "landed"

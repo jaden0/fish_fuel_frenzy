@@ -200,4 +200,5 @@ class Game(object):
             self.check_fish()
             self.check_fuel()
             self.draw()
+
         return True
